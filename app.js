@@ -31,7 +31,7 @@ app.use(morgan("dev"));
 // Sentry error handler
 app.use(Sentry.Handlers.errorHandler());
 
-const file = fs.readFileSync("./docs.yaml", "utf8");
+// const file = fs.readFileSync("./docs.yaml", "utf8");
 
 // 404
 app.use((req, res, next) => {
