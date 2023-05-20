@@ -9,12 +9,12 @@ const komponen = {
   nama_komponen: "buku",
 };
 
-// Komponen
-describe("TEST /auth/komponen endpoint", () => {
+// index
+describe("TEST /auth/index endpoint", () => {
   // positive
   test("Komponen berhasil : menampilkan komponen", () => {
     return supertest(app)
-      .post("/auth/komponen")
+      .post("/auth/index")
       .send(komponen)
       .then((res) => {
         console.log(res.body);
@@ -34,7 +34,7 @@ describe("TEST /auth/komponen endpoint", () => {
   // negative
   test("Komponen gagal : menampilkan komponen", () => {
     return supertest(app)
-      .post("/auth/komponen")
+      .post("/auth/index")
       .send(komponen)
       .then((res) => {
         console.log(res.body);
@@ -45,6 +45,47 @@ describe("TEST /auth/komponen endpoint", () => {
         expect(res.body).toHaveProperty("data");
         expect(res.body.status).toBe(false);
         expect(res.body.message).toBe("komponen already used!");
+      });
+  });
+});
+
+// show
+describe("TEST /auth/show endpoint", () => {
+  test("Login berhasil : email dan password valid", () => {
+    return supertest(app)
+      .post("/auth/show")
+      .send(user)
+      .then((res) => {
+        console.log(res.body);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty("status");
+        expect(res.body).toHaveProperty("message");
+        expect(res.body).toHaveProperty("data");
+        expect(res.body.data).toHaveProperty("token");
+        expect(res.body.status).toBe(true);
+        expect(res.body.message).toBe("login success!");
+
+        user.token = res.body.data.token;
+      });
+  });
+
+  test("Login gagal : email dan password tidak valid", () => {
+    return supertest(app)
+      .post("/auth/show")
+      .send({
+        email: user.email,
+        password: `${user.password}45`,
+      })
+      .then((res) => {
+        console.log(res.body);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toHaveProperty("status");
+        expect(res.body).toHaveProperty("message");
+        expect(res.body).toHaveProperty("data");
+        expect(res.body.status).toBe(false);
+        expect(res.body.message).toBe("credential is not valid!");
       });
   });
 });
