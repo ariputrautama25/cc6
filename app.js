@@ -5,9 +5,6 @@ const morgan = require("morgan");
 const router = require("./routes");
 const cors = require("cors");
 const Sentry = require("@sentry/node");
-const port = 8000;
-const fs = require("fs");
-const { HTTP_PORT = 8000 } = process.env;
 
 const { SENTRY_DSN, ENVIRONMENT } = process.env;
 
@@ -23,25 +20,19 @@ Sentry.init({
 });
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
+
 app.use(cors());
-app.use(router);
 app.use(express.json());
 app.use(morgan("dev"));
+
+app.use(router);
 
 // Sentry error handler
 app.use(Sentry.Handlers.errorHandler());
 
-// const file = fs.readFileSync("./docs.yaml", "utf8");
-
-// 404
-app.use((req, res, next) => {
-  return res.status(404).json({
-    message: "404 Not Found!",
-  });
-});
-
 // 500
 app.use((err, req, res, next) => {
+  console.log(err);
   return res.status(500).json({
     status: false,
     message: err.message,
@@ -49,4 +40,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(port, () => console.log("listening on port ", port));
+module.exports = app;
